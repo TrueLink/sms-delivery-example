@@ -19,6 +19,7 @@
     "type": "git",
     "url": "https://github.com/overelay/sms-delivery-example.git"
   },
+  "private": true,
   "keywords": [
     "onramp",
     "p2p"
