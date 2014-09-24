@@ -6,7 +6,7 @@
   "dependencies": {
     "browser-relay-client": "git://github.com/overelay/browser-relay-client#v0.1.5",
     "react": "^0.11.1",
-    "react-typescript-definitions": "0.0.4"
+    "react-typescript-definitions": "0.0.6"
   },
   "devDependencies": {
     "gulp": "^3.8.8",
