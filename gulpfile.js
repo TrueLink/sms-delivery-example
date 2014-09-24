@@ -5,14 +5,10 @@ var browserify = require('gulp-browserify');
 var runSequence = require('run-sequence');
 var chug = require('gulp-chug');
 var path = require("path");
-var exec = require("child_process").exec;
 
 gulp.task('default', function(done) {
     runSequence(
         "clean", 
-        [
-            "install:browser-relay-client",
-        ],
         [
             "build:browser-relay-client",
         ],
@@ -22,31 +18,10 @@ gulp.task('default', function(done) {
         done);
 });
 
-function install_dep(name, done) {
-    var package_dir = path.join("./node_modules", name)
-    exec("npm install", {
-        cwd: package_dir,
-    }, function (error, stdout, stderr) {
-        var text = '[npm] ';
-        if(stdout) {
-            console.log(text + stdout.replace(/^/, text));
-        }
-        if(stderr) {
-            console.log(text + stderr.replace(/^/, text));
-        }
-        console.log(error);
-        done(error);
-    });    
-}
-
 function build_dep(name) {
     var gulpfile = path.join("./node_modules", name, "gulpfile.js");
-    return gulpfile.src(filepath).pipe(chug())
+    return gulp.src(gulpfile).pipe(chug())
 }
-
-gulp.task("install:browser-relay-client", function (done) {
-    install_dep("browser-relay-client", done);
-});
 
 gulp.task("build:browser-relay-client", function () {
     return build_dep("browser-relay-client");
