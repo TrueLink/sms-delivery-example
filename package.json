@@ -13,8 +13,12 @@
     "gulp-browserify": "^0.5.0",
     "gulp-chug": "^0.3.0",
     "gulp-rimraf": "^0.1.0",
-    "gulp-type": "^0.3.0",
-    "run-sequence": "^0.3.6"
+    "gulp-typescript": "^2.0.0",
+    "npm": "^2.0.0",
+    "resolve": "^1.0.0",
+    "run-sequence": "^0.3.6",
+    "semver-extra": "^1.0.5",
+    "github-url-to-object": "^1.4.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
