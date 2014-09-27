@@ -22,32 +22,21 @@ function getPackage(name, basedir) {
         return stat.isFile() || stat.isFIFO();
     };
 
-    opts = {};
-    opts.paths = opts.paths || [];
-
-    function loadAsDirectorySync(x) {
-        var pkgfile = path.join(x, '/package.json');
-        if (isFile(pkgfile)) {
-            var body = fs.readFileSync(pkgfile, 'utf8');
-            try {
-                return {
-                    dir: x,
-                    path: pkgfile,
-                    data: JSON.parse(body),
-                }
-            }
-            catch (err) {}
-        }
-    }
-
-    var dirs = nodeModulesPaths(basedir, opts);
+    var dirs = nodeModulesPaths(basedir, { paths: [] });
     for (var i = 0; i < dirs.length; i++) {
         var dir = dirs[i];
-        var n = loadAsDirectorySync(path.join( dir, '/', name ));
-        if (n) return n;
+        var pkgfile = path.join(dir, '/', name, '/package.json');
+        if (!isFile(pkgfile)) continue;
+
+        var body = fs.readFileSync(pkgfile, 'utf8');
+        var data = JSON.parse(body); 
+        return {
+            dir: dir,
+            path: pkgfile,
+            data: data,
+        }
     }
 }
-
 
 function installDevDependencies(name, cb) {
     npm.load({ loaded: false }, function (err) {
@@ -106,7 +95,7 @@ function updateGitDependency(name, cb) {
         if(err) {
             cb(err);
         } else {
-            var max = semver.max(tags);
+            var max = semver.max(tags.filter(semver.valid));
             if(semver.eq(pkg.version, max)) {
                 cb(null, null);
             } else {
@@ -124,7 +113,7 @@ function updateGitDependency(name, cb) {
 
 function build_dep(name) {
     try {
-        resolve.sync(name, { basedir: __diname });
+        resolve.sync(name, { basedir: __dirname });
     } catch(err) {
         var gulpfile = path.join("./node_modules", name, "gulpfile.js");
         return gulp.src(gulpfile).pipe(chug());
