@@ -5,10 +5,10 @@ var browserify = require('gulp-browserify');
 var runSequence = require('run-sequence');
 var chug = require('gulp-chug');
 var path = require("path");
+var gitUpdate = require("npm-git-update");
 
 var resolve = require("resolve");
 var npm = require("npm");
-var gh = require('github-url-to-object');
 var semver = require('semver-extra');
 var nodeModulesPaths = require("resolve/lib/node-modules-paths")
 var fs = require("fs");
@@ -67,50 +67,6 @@ function installDevDependencies(name, cb) {
     });
 }
 
-function getGitTags(repo, cb) {
-    var cmd = ["git", "ls-remote", "--tags", repo];
-    var matcher = /[0-9a-fA-F]{40}\s+refs\/tags\/(v?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*))/g;
-    var tags = [];
-    exec(cmd.join(" "), function (error, stdout, stderr) {
-        var match;
-        if (error !== null) {
-            cb(error);
-        } else {
-            while (match = matcher.exec(stdout)) {
-                var tag = match[1];
-                if(tags.indexOf(tag) == -1) {
-                    tags.push(tag);
-                }
-            }
-            cb(null, tags);
-        }
-    });
-}
-
-function updateGitDependency(name, cb) {
-    var pkg = getPackage(name, __dirname).data;
-    var gho = gh(pkg.repository.url);
-    var url = "https://github.com/" + gho.user + "/" + gho.repo;
-    getGitTags(url, function(err, tags) {
-        if(err) {
-            cb(err);
-        } else {
-            var max = semver.max(tags.filter(semver.valid));
-            if(semver.eq(pkg.version, max)) {
-                cb(null, null);
-            } else {
-                console.log("Updating `" + name +"` to " + max);
-                npm.load({ loaded: false }, function (err) {
-                    npm.on("log", function (message) {
-                        console.log(message);
-                    });
-                    npm.commands.install([gho.user + "/" + gho.repo + "#" + max], cb);
-                });
-            }
-        }
-    });
-}
-
 function build_dep(name) {
     try {
         resolve.sync(name, { basedir: __dirname });
@@ -120,8 +76,28 @@ function build_dep(name) {
     }
 }
 
+gulp.task("update:npm-git-update", function(done) {
+    gitUpdate.getUpdateUrls(["npm-git-update"], __dirname, function(err, urls) {
+        if(err) {
+            return done(err);
+        }
+        npm.load( { loaded: false }, function(err) {
+            if(err) {
+                return done(err);
+            }
+            npm.on('log', console.log.bind(console));
+            if(urls.length > 0) {
+                npm.commands.install(urls, done);
+            } else {
+                return done();
+            }
+        });
+    });
+
+});
+
 gulp.task("update:browser-relay-client", function(done) {
-    updateGitDependency("browser-relay-client", done);
+    gitUpdate(["browser-relay-client"], __dirname, done);
 });
 
 gulp.task("install:browser-relay-client", function(done) {
@@ -135,6 +111,7 @@ gulp.task("build:browser-relay-client", function () {
 gulp.task('default', function(done) {
     runSequence(
         "clean", 
+        "update:npm-git-update",
         "update:browser-relay-client",
         "install:browser-relay-client",
         "build:browser-relay-client",
