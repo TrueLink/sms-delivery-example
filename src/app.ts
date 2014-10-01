@@ -1,4 +1,4 @@
-var React = require("react");
+import React = require("react");
 var RD = React.DOM;
 
 var App = React.createClass({
@@ -8,5 +8,5 @@ var App = React.createClass({
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-    React.renderComponent(new App(), document.body);
+    React.renderComponent(App(), document.body);
 }, false );
