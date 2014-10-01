@@ -149,6 +149,10 @@ gulp.task('compile', function () {
             ])
         .pipe(compiler)
         ;
+
+    result.dts
+        .pipe(gulp.dest('dist'))
+        ;
     
     return result.js
         .pipe(gulp.dest('temp'))
@@ -156,8 +160,8 @@ gulp.task('compile', function () {
 });
 
 gulp.task('bundle', function () {
-    return gulp.src("temp/index.js")
-        .pipe(browserify({
+    return gulp.src("temp/app.js")
+        .   pipe(browserify({
             insertGlobals: true,
             debug: true,
         }))

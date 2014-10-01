@@ -4,7 +4,7 @@
   "description": "Example application using onramp technology to send direct messages",
   "main": "index.js",
   "dependencies": {
-    "browser-relay-client": "git://github.com/overelay/browser-relay-client#v0.1.5",
+    "browser-relay-client": "git://github.com/overelay/browser-relay-client#v0.1.7",
     "react": "^0.11.1",
     "react-typescript-definitions": "0.0.6"
   },
