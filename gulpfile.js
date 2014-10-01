@@ -161,7 +161,7 @@ gulp.task('compile', function () {
 
 gulp.task('bundle', function () {
     return gulp.src("temp/app.js")
-        .   pipe(browserify({
+        .pipe(browserify({
             insertGlobals: true,
             debug: true,
         }))
