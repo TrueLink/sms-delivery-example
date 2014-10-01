@@ -28,3 +28,6 @@ node_modules
 .lock-wscript
 obj/
 dist/
+src/**/*.js.map
+src/**/*.js
+bin/
