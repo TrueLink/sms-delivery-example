@@ -5,23 +5,24 @@
   "main": "index.js",
   "dependencies": {
     "browser-relay-client": "git://github.com/overelay/browser-relay-client#v0.1.7",
-    "react": "^0.11.1",
-    "react-typescript-definitions": "0.0.6"
+    "browserify-middleware": "^4.1.0",
+    "express": "^4.10.4",
+    "react": "^0.12.1",
+    "typed-react": "^3.2.0"
   },
   "devDependencies": {
-    "gulp": "^3.8.8",
-    "gulp-browserify": "^0.5.0",
-    "gulp-chug": "^0.3.0",
-    "gulp-rimraf": "^0.1.0",
-    "gulp-typescript": "^2.0.0",
-    "npm": "^2.0.2",
+    "gulp": "^3.8.10",
+    "gulp-chug": "^0.3.1",
+    "gulp-rimraf": "^0.1.1",
+    "gulp-typescript": "^2.3.0",
+    "npm": "^2.1.10",
     "npm-git-update": "^1.1.0",
     "resolve": "^1.0.0",
-    "run-sequence": "^0.3.6",
+    "run-sequence": "^1.0.2",
     "semver-extra": "^2.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./lib/server -h 127.0.0.1"
   },
   "repository": {
     "type": "git",

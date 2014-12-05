@@ -4,5 +4,12 @@
   "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
-  "installed": {}
+  "installed": {
+    "node-uuid/node-uuid.d.ts": {
+      "commit": "7dee26517d7024bbec277eb35bd7a066ceb14724"
+    },
+    "node/node.d.ts": {
+      "commit": "7dee26517d7024bbec277eb35bd7a066ceb14724"
+    }
+  }
 }
