@@ -31,3 +31,4 @@ dist/
 src/**/*.js.map
 src/**/*.js
 bin/
+.ntvs_analysis.dat
