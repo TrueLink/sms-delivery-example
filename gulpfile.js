@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var rimraf = require('gulp-rimraf');
-var browserify = require('gulp-browserify');
 var runSequence = require('run-sequence');
 var chug = require('gulp-chug');
 var path = require("path");
@@ -76,26 +75,6 @@ function build_dep(name) {
     }
 }
 
-gulp.task("update:npm-git-update", function(done) {
-    gitUpdate.getUpdateUrls(["npm-git-update"], __dirname, function(err, urls) {
-        if(err) {
-            return done(err);
-        }
-        npm.load( { loaded: false }, function(err) {
-            if(err) {
-                return done(err);
-            }
-            npm.on('log', console.log.bind(console));
-            if(urls.length > 0) {
-                npm.commands.install(urls, done);
-            } else {
-                return done();
-            }
-        });
-    });
-
-});
-
 gulp.task("update:browser-relay-client", function(done) {
     gitUpdate(["browser-relay-client"], __dirname, done);
 });
@@ -110,21 +89,16 @@ gulp.task("build:browser-relay-client", function () {
 
 gulp.task('default', function(done) {
     runSequence(
-        "clean", 
-        "update:npm-git-update",
+        "clean",
         "update:browser-relay-client",
         "install:browser-relay-client",
         "build:browser-relay-client",
-        "compile", 
-        "bundle", 
-        "finalize",
+        "compile",
         done);
 });
 
 gulp.task('clean', function () {
     return gulp.src([
-        'dist/**/*.js',
-        'dist/**/*.map',
         'lib/**/*.js',
         'lib/**/*.d.ts',
         ], { read: false })
@@ -138,7 +112,7 @@ gulp.task('compile', function () {
         module: 'commonjs',
         target: 'ES5',
         noImplicitAny: true, 
-        noLib: true, 
+        noLib: false, 
         outDir: 'lib',
     });
 
@@ -151,29 +125,10 @@ gulp.task('compile', function () {
         ;
 
     result.dts
-        .pipe(gulp.dest('dist'))
+        .pipe(gulp.dest('lib'))
         ;
     
     return result.js
-        .pipe(gulp.dest('temp'))
+        .pipe(gulp.dest('lib'))
         ;
 });
-
-gulp.task('bundle', function () {
-    return gulp.src("temp/app.js")
-        .pipe(browserify({
-            insertGlobals: true,
-            debug: true,
-        }))
-        .pipe(gulp.dest('dist'))
-        ;
-});
-
-gulp.task('finalize', function() {
-    return gulp.src("temp")
-        .pipe(rimraf({ force: true }));
-});
-
-// gulp.task('spa', ['compile'], function () {
-//     spa.from_config("spa.yaml").build();
-// });
