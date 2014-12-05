@@ -32,3 +32,6 @@ src/**/*.js.map
 src/**/*.js
 bin/
 .ntvs_analysis.dat
+lib/*.map
+lib/*.js
+lib/*.d.ts
