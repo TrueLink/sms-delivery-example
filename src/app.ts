@@ -4,22 +4,26 @@ import uuid = require("node-uuid");
 import client = require("browser-relay-client");
 import routing = require("browser-relay-client/lib/routing");
 import hub = require("browser-relay-client/lib/hub");
+import rampConnection = require("./ramp-connection");
 var RD = react.DOM;
 
 export interface AppProps {
     hub: hub.HubAPI
+    ramps?: string[];
 }
 
 interface AppState {
     messages?: string[];
     contacts?: string[];
+    currentRamps?: string[];
 }
 
 class AppClass extends TypedReact.Component<AppProps, AppState> {
     getInitialState(): AppState {
         return {
             messages: [],
-            contacts: []
+            contacts: [],
+            currentRamps: this.props.ramps
         };
     }
 
@@ -86,8 +90,15 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                     type: "submit",
                     value: "Send"
                 })
-                )
-            );
+                ),
+            this.state.currentRamps.map((addr) => {
+                return rampConnection.RampConnection({
+                    key: addr,
+                    hub: hub,
+                    addr: addr
+                });
+            })
+        );
     }
 }
 
@@ -96,7 +107,14 @@ export var App = react.createFactory(TypedReact.createClass<AppProps, AppState>(
 window.addEventListener("load", function () {
     var guid = uuid.v4();
     var instance = hub.Hub.create(guid);
-    react.render(App({ hub: instance }), document.body);
+    var app = App({
+        hub: instance,
+        ramps: [
+            "ws://127.0.0.1:20500/",
+            "ws://127.0.0.1:20501/"
+        ]
+    });
+    react.render(app, document.body);
 });
 
 window.addEventListener("error", function () {

@@ -28,6 +28,7 @@
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\contact.ts" />
     <TypeScriptCompile Include="src\contacts-list.ts" />
+    <TypeScriptCompile Include="src\ramp-connection.ts" />
     <TypeScriptCompile Include="src\server.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
