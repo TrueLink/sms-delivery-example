@@ -16,6 +16,7 @@ interface AppState {
     messages?: string[];
     contacts?: string[];
     currentRamps?: string[];
+    routing?: string[][];
 }
 
 class AppClass extends TypedReact.Component<AppProps, AppState> {
@@ -23,7 +24,8 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
         return {
             messages: [],
             contacts: [],
-            currentRamps: this.props.ramps
+            currentRamps: this.props.ramps,
+            routing: []
         };
     }
 
@@ -36,7 +38,7 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     private _routingChanged(table: routing.RoutingTable): void {
         var nodes = table.children;
         var hub = this.props.hub;
-        var contacts = this.state.contacts;
+        var contacts: string[] = [];
 
         for (var i = 0; i < nodes.length; i++) {
             var guid = nodes[i];
@@ -44,7 +46,10 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
             contacts.push(guid);
         }
 
-        this.setState({ contacts: contacts });
+        this.setState({
+            contacts: contacts,
+            routing: table.serialize()
+        });
     }
 
     private _sendMessage(event: React.FormEvent) {
@@ -72,16 +77,19 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     render() {
         var hub = this.props.hub;
         return RD.div(null,
-            RD.h1(null, hub.guid),
+            RD.h1(null, "GUID: ", RD.span(null, hub.guid)),
             RD.textarea({
                 id: "log",
                 value: this.state.messages.join("\n"),
                 readOnly: true
             }),
-            hub.connections().map((item) => {
-                return RD.div(null, item.endpoint);
-            }),
             RD.form({ onSubmit: this._sendMessage },
+                this.state.contacts.map((guid) => {
+                    return RD.div(null,
+                        RD.label({ "for": guid }, guid),
+                        RD.input({ type: "radio", name: "dest", id: guid })
+                        );
+                }),
                 RD.input({
                     type: "text",
                     ref: "chat-message"
@@ -97,7 +105,18 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                     hub: hub,
                     addr: addr
                 });
-            })
+            }),
+            RD.table(null, 
+                RD.caption(null, "Routing table"),
+                RD.tbody(null, 
+                    this.state.routing.map((row) => {
+                        return RD.tr(null,
+                            RD.td(null, row[0]),
+                            RD.td(null, row[2])
+                            );
+                    })
+                )
+            )
         );
     }
 }
