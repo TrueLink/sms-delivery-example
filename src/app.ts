@@ -32,7 +32,9 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     private _messageReceived(message: string): void {
         var messages = this.state.messages;
         messages.push(message);
-        this.setState({ messages: messages });
+        this.setState({
+            messages: messages
+        });
     }
 
     private _routingChanged(table: routing.RoutingTable): void {
@@ -53,14 +55,17 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     }
 
     private _sendMessage(event: React.FormEvent) {
-        var messageInput = <HTMLInputElement>this.refs["chat-message"].getDOMNode();
-        //var destinationInput = <HTMLSelectElement>this.refs[""].getDOMNode();
-        var message: string = messageInput.value;
-        //var destination: string = destinationInput.value;
-        this._messageReceived(message);
+        var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
-        form.reset();
+        var message = <HTMLInputElement>form.elements["message"];
+        var destination = <HTMLInputElement>form.elements["dest"];
+        if (!destination) return false;
+
+        this._messageReceived(message.value);
+        hub.sendTo(destination.value, message.value);
+        message.value = message.defaultValue;
         event.preventDefault();
+        return false;
     }
 
     componentDidMount() {
@@ -87,12 +92,12 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                 this.state.contacts.map((guid) => {
                     return RD.div(null,
                         RD.label({ "for": guid }, guid),
-                        RD.input({ type: "radio", name: "dest", id: guid })
+                        RD.input({ type: "radio", name: "dest", id: guid, value: guid })
                         );
                 }),
                 RD.input({
                     type: "text",
-                    ref: "chat-message"
+                    name: "message"
                 }),
                 RD.input({
                     type: "submit",
