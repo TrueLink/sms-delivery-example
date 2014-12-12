@@ -54,6 +54,25 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
         });
     }
 
+    private _addRamp(event: React.FormEvent) {
+        var hub = this.props.hub;
+        var form = <HTMLFormElement>event.target;
+        var addr = <HTMLInputElement>form.elements["addr"];
+        if (!addr.value) return false;
+
+        var ramps = this.state.currentRamps;
+        ramps.push(addr.value);
+
+        this.setState({
+            currentRamps: ramps
+        });
+
+        form.reset();
+
+        event.preventDefault();
+        return false;
+    }
+
     private _sendMessage(event: React.FormEvent) {
         var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
@@ -134,6 +153,12 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                     addr: addr
                 });
             }),
+            RD.form({
+                onSubmit: this._addRamp
+            },
+                RD.input({ type: "text", name: "addr" }),
+                RD.input({ type: "submit", value: "Add" })
+            ),
             RD.h2(null, "Routing table"),
             RD.table({ className: "routing" },
                 RD.thead(null,
