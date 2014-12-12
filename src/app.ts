@@ -31,7 +31,7 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
 
     private _messageReceived(message: string): void {
         var messages = this.state.messages;
-        messages.push(message);
+        messages.push("< " + message);
         this.setState({
             messages: messages
         });
@@ -60,8 +60,14 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
         var message = <HTMLInputElement>form.elements["message"];
         var destination = <HTMLInputElement>form.elements["dest"];
         if (!destination) return false;
+        if (!destination.value) return false;
 
-        this._messageReceived(message.value);
+        var messages = this.state.messages;
+        messages.push("> " + message.value);
+        this.setState({
+            messages: messages
+        });
+
         hub.sendTo(destination.value, message.value);
         message.value = message.defaultValue;
         event.preventDefault();
@@ -82,19 +88,35 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     render() {
         var hub = this.props.hub;
         return RD.div(null,
-            RD.h1(null, "GUID: ", RD.span(null, hub.guid)),
-            RD.textarea({
-                id: "log",
-                value: this.state.messages.join("\n"),
-                readOnly: true
-            }),
-            RD.form({ onSubmit: this._sendMessage },
-                this.state.contacts.map((guid) => {
-                    return RD.div(null,
-                        RD.label({ "for": guid }, guid),
-                        RD.input({ type: "radio", name: "dest", id: guid, value: guid })
-                        );
-                }),
+            RD.h1(null, "GUID: ", RD.span({
+                className: "guid"
+            }, hub.guid)),
+            RD.form({
+                onSubmit: this._sendMessage,
+                className: "submit-form"
+            },
+                RD.table(null,
+                    RD.tbody(null,
+                        RD.tr(null,
+                            RD.td(null,
+                                RD.textarea({
+                                    id: "log",
+                                    value: this.state.messages.join("\n"),
+                                    readOnly: true
+                                })
+                                ),
+                            RD.td(null,
+                                this.state.contacts.map((guid, index) => {
+                                    var id = "contact-" + index;
+                                    return RD.div(null,
+                                        RD.label({ className: "guid", htmlFor: id }, guid),
+                                        RD.input({ type: "radio", name: "dest", id: id, value: guid })
+                                        );
+                                })
+                                )
+                            )
+                        )
+                    ),
                 RD.input({
                     type: "text",
                     name: "message"
@@ -103,7 +125,8 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                     type: "submit",
                     value: "Send"
                 })
-                ),
+            ),
+            RD.h2(null, "Ramp servers"),
             this.state.currentRamps.map((addr) => {
                 return rampConnection.RampConnection({
                     key: addr,
@@ -111,16 +134,22 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                     addr: addr
                 });
             }),
-            RD.table(null, 
-                RD.caption(null, "Routing table"),
-                RD.tbody(null, 
+            RD.h2(null, "Routing table"),
+            RD.table({ className: "routing" },
+                RD.thead(null,
+                    RD.tr(null,
+                        RD.th(null, "Origin"),
+                        RD.th(null, "Endpoint")
+                        )
+                    ),
+                RD.tbody(null,
                     this.state.routing.map((row) => {
                         return RD.tr(null,
-                            RD.td(null, row[0]),
+                            RD.td({ className: "guid" }, row[0]),
                             RD.td(null, row[2])
                             );
                     })
-                )
+                    )
             )
         );
     }

@@ -1,5 +1,6 @@
 ﻿import react = require("react");
 import TypedReact = require("typed-react");
+import uuid = require("node-uuid");
 import hub = require("browser-relay-client/lib/hub");
 import connection = require("browser-relay-client/lib/connection");
 import wsConn = require("browser-relay-client/lib/websocket-connection");
@@ -15,12 +16,14 @@ interface RampConnectionState {
     id?: string;
     connection?: wsConn.WebSocketConnectionAPI;
     peers?: string[];
+    uid?: string;
 }
 
 class RampConnectionClass extends TypedReact.Component<RampConnectionProps, RampConnectionState> {
     getInitialState(): RampConnectionState {
         return {
-            peers: []
+            peers: [],
+            uid: uuid.v4()
         };
     }
 
@@ -83,15 +86,42 @@ class RampConnectionClass extends TypedReact.Component<RampConnectionProps, Ramp
     }
 
     render() {
-        return RD.div(null,
-            RD.h3(null, this.props.addr),
-            RD.div(null, 
-                this.state.connection
-                ? RD.button({ onClick: this._disconnect }, "Disconnect")
-                : RD.button({ onClick: this._connect }, "Connect"),
-                this.state.id ? " ID: " + this.state.id : null
-                ),
-            RD.div(null, this.state.peers.join(", "))
+        var addrId = "ramp-addr-" + this.state.uid;
+        var connId = "conn-id-" + this.state.uid;
+        return RD.div({
+            className: "connection"
+        },
+            this.state.connection
+            ? RD.button({ onClick: this._disconnect }, "Disconnect")
+            : RD.button({ onClick: this._connect }, "Connect"),
+            RD.table(null, 
+                RD.tbody(null,
+                    RD.tr(null, 
+                        RD.td(null, RD.label({
+                            htmlFor: addrId
+                        }, "Address")),
+                        RD.td(null, RD.input({
+                            id: addrId,
+                            readOnly: true,
+                            value: this.props.addr
+                        }))
+                        ),
+                    RD.tr(null,
+                        RD.td(null, RD.label({
+                            htmlFor: connId
+                        }, "ID")),
+                        RD.td(null, RD.input({
+                            id: connId,
+                            readOnly: true,
+                            value: this.state.id
+                        }))
+                        ),
+                    RD.tr(null,
+                        RD.td(null, "Peers"),
+                        RD.td(null, this.state.peers.join(", "))
+                        )
+                )
+            )
         );
     }
 }
