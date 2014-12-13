@@ -59,20 +59,24 @@ class RampConnectionClass extends TypedReact.Component<RampConnectionProps, Ramp
         connection.onIdentified.on(this._connectionIdentified, this);
         connection.onConnected.on(this._peerConnected, this);
         connection.onDisconnected.on(this._peerDisconnected, this);
+        connection.onClose.on(this._disconnected, this);
 
         this.setState({
             connection: connection,
         });
     }
 
-    private _disconnect() {
-        var hub = this.props.hub;
+    private _disconnected() {
         var connection = this.state.connection;
         connection.onIdentified.off(null, this);
         connection.onConnected.off(null, this);
         connection.onDisconnected.off(null, this);
-        hub.disconnect(this.props.addr);
         this.replaceState(this.getInitialState());
+    }
+
+    private _disconnect() {
+        var hub = this.props.hub;
+        hub.disconnect(this.props.addr);
     }
 
     componentWillUnmount() {
