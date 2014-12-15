@@ -57,7 +57,7 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     private _addRamp(event: React.FormEvent) {
         var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
-        var addr = <HTMLInputElement>form.elements["addr"];
+        var addr = <HTMLInputElement>form.elements.item("addr");
         if (!addr.value) return false;
 
         var ramps = this.state.currentRamps;
@@ -76,8 +76,8 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     private _sendMessage(event: React.FormEvent) {
         var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
-        var message = <HTMLInputElement>form.elements["message"];
-        var destination = <HTMLInputElement>form.elements["dest"];
+        var message = <HTMLInputElement>form.elements.item("message");
+        var destination = <HTMLInputElement>form.elements.item("dest");
         if (!destination) return false;
         if (!destination.value) return false;
 
