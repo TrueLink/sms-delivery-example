@@ -102,6 +102,7 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     componentWillUnmount() {
         var hub = this.props.hub;
         hub.onMessage.off(this._messageReceived, this);
+        hub.onRoutingChanged.off(this._routingChanged, this);
     }
 
     render() {
