@@ -55,6 +55,8 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
     }
 
     private _addRamp(event: React.FormEvent) {
+        event.preventDefault();
+
         var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
         var addr = <HTMLInputElement>form.elements.item("addr");
@@ -69,11 +71,12 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
 
         form.reset();
 
-        event.preventDefault();
         return false;
     }
 
     private _sendMessage(event: React.FormEvent) {
+        event.preventDefault();
+
         var hub = this.props.hub;
         var form = <HTMLFormElement>event.target;
         var message = <HTMLInputElement>form.elements.item("message");
@@ -89,7 +92,6 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
 
         hub.sendTo(destination.value, message.value);
         message.value = message.defaultValue;
-        event.preventDefault();
         return false;
     }
 
