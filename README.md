@@ -1,4 +1,4 @@
 sms-delivery-example
 ====================
 
-Example application using onramp technology to send direct messages
+Example application that uses onramp to send direct messages
