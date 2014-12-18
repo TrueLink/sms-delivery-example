@@ -117,7 +117,7 @@ class AppClass extends TypedReact.Component<AppProps, AppState> {
                 onSubmit: this._sendMessage,
                 className: "submit-form"
             },
-                RD.table(null,
+                RD.table({ className: "layout" },
                     RD.tbody(null,
                         RD.tr(null,
                             RD.td(null,
